@@ -40,13 +40,7 @@ export class AppComponent implements OnInit {
     this.ws.onToast         = (msg, type) => this.showToast(msg, type);
     this.ws.onBackendStatus = (text, type) => { this.backendText.set(text); this.backendType.set(type); };
 
-    // Auto-detect correct WebSocket URL:
-    // On Render: same host, wss://yourapp.onrender.com
-    // Local dev on :4200: connect to localhost:3000
-    const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const host     = location.hostname;
-    const port     = location.port === '4200' ? ':3000' : (location.port ? `:${location.port}` : '');
-    const wsUrl    = `${protocol}//${host}${port}`;
+    const wsUrl = 'wss://vortexbot-y9yf.onrender.com';
 
     this.log.add(`Connecting to: ${wsUrl}`, 'info');
     this.ws.connect(wsUrl);
