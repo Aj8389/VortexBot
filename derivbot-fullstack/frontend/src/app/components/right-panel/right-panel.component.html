@@ -1,0 +1,113 @@
+<div class="rpanel">
+
+  <!-- Live Signal -->
+  <div class="sigsect">
+    <div class="ptitle">Live Signal</div>
+    <div class="sigdisp">
+      <div class="sigicon">{{ signalIcon }}</div>
+      <div class="sigtxt" [class]="signalClass">{{ signalText }}</div>
+      <div class="sigstrat">{{ state.selectedStrategy() }}</div>
+      <div class="sigdetail">{{ signal()?.reason || '—' }}</div>
+    </div>
+
+    <div class="indbars">
+      <div class="ibar-row">
+        <div class="ibar-lbl">RSI</div>
+        <div class="ibar-bg">
+          <div class="ibar-fill" [style.width.%]="rsiFillWidth" [style.background]="rsiFillColor"></div>
+        </div>
+        <div class="ibar-val">{{ signal()?.rsi ?? 50 }}</div>
+      </div>
+      <div class="ibar-row">
+        <div class="ibar-lbl">EMA</div>
+        <div class="ibar-bg">
+          <div class="ibar-fill" [style.width.%]="emaFillWidth" [style.background]="emaFillColor"></div>
+        </div>
+        <div class="ibar-val">{{ emaTrend }}</div>
+      </div>
+      <div class="ibar-row">
+        <div class="ibar-lbl">STRENGTH</div>
+        <div class="ibar-bg">
+          <div class="ibar-fill" [style.width.%]="strengthFillWidth" [style.background]="strengthFillColor"></div>
+        </div>
+        <div class="ibar-val">{{ signal()?.strength ?? 0 }}%</div>
+      </div>
+      <div class="ibar-row">
+        <div class="ibar-lbl">MACD</div>
+        <div class="ibar-bg">
+          <div class="ibar-fill" [style.width.%]="macdFillWidth" [style.background]="macdFillColor"></div>
+        </div>
+        <div class="ibar-val">{{ macdDisplay }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Active Trade -->
+  <div class="activesect">
+    <div class="ptitle">Active Trade</div>
+    <div *ngIf="!activeTrade()" class="noact">No active trades</div>
+    <div *ngIf="activeTrade() as t" class="actcard">
+      <div class="acth">
+        <span class="act-sym">R_100</span>
+        <span class="badge" [class]="t.direction">{{ t.direction }}</span>
+      </div>
+      <div class="act-meta">Entry: {{ t.entryPrice.toFixed(2) }} | Stake: ${{ t.stake.toFixed(2) }}</div>
+      <div class="actpnl">$0.00</div>
+      <div class="actprog"><div class="actprogfill" style="width:5%;background:var(--blue)"></div></div>
+      <div class="actft">
+        <div class="sl-price">SL: {{ (t.entryPrice * 0.85).toFixed(2) }}</div>
+        <div class="open-lbl">OPEN</div>
+        <div class="tp-price">TP: {{ (t.entryPrice * 1.30).toFixed(2) }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Win Rate -->
+  <div class="wrsect">
+    <div class="ptitle">Win Rate</div>
+    <div class="wrdisp">
+      <div class="wrring">
+        <svg width="72" height="72" viewBox="0 0 72 72">
+          <circle cx="36" cy="36" r="28" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="6"/>
+          <circle cx="36" cy="36" r="28" fill="none"
+            [attr.stroke]="wrCircleColor" stroke-width="6"
+            stroke-dasharray="175.9"
+            [attr.stroke-dashoffset]="wrCircleOffset"
+            stroke-linecap="round"
+            transform="rotate(-90 36 36)"
+            style="transition: all 0.5s"/>
+        </svg>
+        <div class="wrnum" [style.color]="wrCircleColor">{{ stats().winRate }}%</div>
+      </div>
+      <div class="wrstats">
+        <div class="wsrow">
+          <div class="wslbl">Wins</div>
+          <div class="wsval" style="color:var(--green)">{{ stats().wins }}</div>
+        </div>
+        <div class="wsrow">
+          <div class="wslbl">Losses</div>
+          <div class="wsval" style="color:var(--red)">{{ stats().losses }}</div>
+        </div>
+        <div class="wsrow">
+          <div class="wslbl">Best Streak</div>
+          <div class="wsval" style="color:var(--purple)">{{ stats().bestStreak }}</div>
+        </div>
+        <div class="wsrow">
+          <div class="wslbl">Daily P&L</div>
+          <div class="wsval" [style.color]="stats().pnl >= 0 ? 'var(--green)' : 'var(--red)'">{{ pnlDisplay }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- System Log -->
+  <div class="logsect">
+    <div class="ptitle">System Log</div>
+    <div class="loglist">
+      <div *ngFor="let entry of logs()" class="logentry">
+        <span class="logt">{{ entry.time }}</span>
+        <span class="logm" [class]="entry.level">{{ entry.msg }}</span>
+      </div>
+    </div>
+  </div>
+</div>

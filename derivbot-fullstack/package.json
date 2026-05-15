@@ -1,0 +1,20 @@
+{
+  "name": "derivbot-pro-fullstack",
+  "version": "4.0.0",
+  "description": "DerivBot Pro — Fully Integrated Fullstack (Node.js Backend + Angular Frontend)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev:backend": "node server.js",
+    "dev:frontend": "cd frontend && npm start",
+    "build": "cd frontend && npm install && npm run build",
+    "install:all": "npm install && cd frontend && npm install"
+  },
+  "dependencies": {
+    "express": "^4.22.1",
+    "ws": "^8.20.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,70 @@
+<div class="center">
+  <!-- Price Chart -->
+  <div class="chartbox">
+    <div class="chart-scan"></div>
+    <div class="chart-hud">
+      <div class="cprice" [class.up]="priceUp" [class.dn]="!priceUp">
+        {{ currentPrice().toFixed(2) }}
+      </div>
+      <div class="cpct" [class.up]="priceUp" [class.dn]="!priceUp">
+        {{ pctDisplay }}
+      </div>
+    </div>
+    <div class="chart-sym">{{ state.symbol() }} · {{ state.derivConnected() ? 'LIVE' : 'DISCONNECTED' }}</div>
+    <canvas id="mc"></canvas>
+  </div>
+
+  <!-- Stats Bar -->
+  <div class="statsbar">
+    <div class="sbox"><div class="snum g">{{ stats().wins }}</div><div class="slbl">WINS</div></div>
+    <div class="sbox"><div class="snum r">{{ stats().losses }}</div><div class="slbl">LOSSES</div></div>
+    <div class="sbox"><div class="snum a">{{ stats().total }}</div><div class="slbl">TRADES</div></div>
+    <div class="sbox"><div class="snum b">{{ stats().winRate }}%</div><div class="slbl">WIN RATE</div></div>
+    <div class="sbox">
+      <div class="snum" [class.g]="stats().pnl >= 0" [class.r]="stats().pnl < 0">
+        {{ (stats().pnl >= 0 ? '+' : '') + '$' + (stats().pnl | number:'1.2-2') }}
+      </div>
+      <div class="slbl">P&L</div>
+    </div>
+    <div class="sbox"><div class="snum p">{{ stats().remaining }}</div><div class="slbl">REMAIN</div></div>
+  </div>
+
+  <!-- P&L Chart -->
+  <div class="pnlbox">
+    <div class="pnl-label">P&L CURVE</div>
+    <canvas id="pnlC2"></canvas>
+  </div>
+
+  <!-- Trade History -->
+  <div class="tradebox">
+    <div class="tradehead">
+      <div class="tradettl">TRADE HISTORY</div>
+      <div class="tabs">
+        <div class="tab" [class.on]="tradeFilter()==='all'" (click)="setFilter('all')">All</div>
+        <div class="tab" [class.on]="tradeFilter()==='open'" (click)="setFilter('open')">Open</div>
+        <div class="tab" [class.on]="tradeFilter()==='win'" (click)="setFilter('win')">Wins</div>
+        <div class="tab" [class.on]="tradeFilter()==='loss'" (click)="setFilter('loss')">Losses</div>
+      </div>
+    </div>
+    <div class="tradewrap">
+      <div class="th">
+        <div>TIME</div><div>ASSET</div><div>DIR</div><div>STAKE</div>
+        <div>ENTRY</div><div>EXIT</div><div>RESULT</div><div>P&L</div>
+      </div>
+      <div *ngIf="filteredTrades.length === 0" class="empty">
+        No trades yet. Connect API token and start the bot.
+      </div>
+      <div *ngFor="let t of filteredTrades.slice(0,50)"
+           class="tr" [class.win-r]="t.status==='win'" [class.loss-r]="t.status==='loss'" [class.open-r]="t.status==='open'">
+        <div class="t-muted">{{ tradeTime(t) }}</div>
+        <div>{{ state.symbol() }}</div>
+        <div><span class="badge" [class]="t.direction">{{ t.direction }}</span></div>
+        <div>${{ t.stake.toFixed(2) }}</div>
+        <div>{{ t.entryPrice.toFixed(2) }}</div>
+        <div>{{ tradeExit(t) }}</div>
+        <div><span class="badge" [class]="tradeResult(t)">{{ tradeResult(t) }}</span></div>
+        <div class="pnl" [class.p]="(t.profit||0)>=0" [class.n]="(t.profit||0)<0">{{ tradePnl(t) }}</div>
+      </div>
+    </div>
+  </div>
+</div>

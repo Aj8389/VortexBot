@@ -1,0 +1,190 @@
+<div class="lpanel">
+
+  <!-- SCROLLABLE CONTENT -->
+  <div class="lpanel-scroll">
+
+    <!-- Connection -->
+    <div class="psec">
+      <div class="ptitle">Deriv API Connection</div>
+      <div class="field">
+        <label>API Token</label>
+        <div class="irow">
+          <input type="password" [ngModel]="apiToken()" (ngModelChange)="apiToken.set($event)"
+                 placeholder="Paste Deriv API token..." autocomplete="off"/>
+          <button class="ibtn green" (click)="doConnect()">CONNECT</button>
+          <button class="ibtn outline" (click)="clearToken()" title="Clear token" style="padding:7px 10px;">✕</button>
+        </div>
+        <div class="tok-saved" [class.hidden]="!tokenSaved()">{{ tokenMsg() }}</div>
+      </div>
+      <div class="api-hint">
+        <b>GET TOKEN:</b> app.deriv.com → API Token → Read + Trade
+      </div>
+    </div>
+
+    <!-- Market -->
+    <div class="psec">
+      <div class="ptitle">Market</div>
+      <div class="field">
+        <label>Asset</label>
+        <select [ngModel]="symbol()" (ngModelChange)="symbol.set($event); changeSymbol()">
+          <optgroup label="Volatility Indices">
+            <option value="R_100">Volatility 100 Index</option>
+            <option value="R_75">Volatility 75 Index</option>
+            <option value="R_50">Volatility 50 Index</option>
+            <option value="R_25">Volatility 25 Index</option>
+            <option value="R_10">Volatility 10 Index</option>
+          </optgroup>
+          <optgroup label="Crash / Boom">
+            <option value="BOOM1000">Boom 1000 Index</option>
+            <option value="BOOM500">Boom 500 Index</option>
+            <option value="CRASH1000">Crash 1000 Index</option>
+            <option value="CRASH500">Crash 500 Index</option>
+          </optgroup>
+          <optgroup label="Forex">
+            <option value="frxEURUSD">EUR/USD</option>
+            <option value="frxGBPUSD">GBP/USD</option>
+            <option value="frxUSDJPY">USD/JPY</option>
+            <option value="frxAUDUSD">AUD/USD</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="field">
+        <label>Contract Type</label>
+        <select [ngModel]="contractType()" (ngModelChange)="contractType.set($event)">
+          <option value="AUTO">Auto (Signal-Based)</option>
+          <option value="CALL">Always Rise (Call)</option>
+          <option value="PUT">Always Fall (Put)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Duration</label>
+        <select [ngModel]="duration()" (ngModelChange)="duration.set($event)">
+          <option value="1t">1 Tick</option>
+          <option value="5t">5 Ticks</option>
+          <option value="1m">1 Minute</option>
+          <option value="5m">5 Minutes</option>
+          <option value="15m">15 Minutes</option>
+          <option value="1h">1 Hour</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Risk Management -->
+    <div class="psec">
+      <div class="ptitle">Risk Management</div>
+      <div class="field">
+        <label>Stake per Trade</label>
+        <div class="rfield">
+          <input type="range" min="0.35" max="1000" step="0.01" [ngModel]="stake()" (ngModelChange)="stake.set(+$event)"/>
+          <span class="rval">${{ stake().toFixed(2) }}</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Stop Loss %</label>
+        <div class="rfield">
+          <input type="range" min="1" max="80" [ngModel]="stopLoss()" (ngModelChange)="stopLoss.set(+$event)"/>
+          <span class="rval">{{ stopLoss() }}%</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Take Profit %</label>
+        <div class="rfield">
+          <input type="range" min="1" max="200" [ngModel]="takeProfit()" (ngModelChange)="takeProfit.set(+$event)"/>
+          <span class="rval">{{ takeProfit() }}%</span>
+        </div>
+      </div>
+      <div class="sl-tp">
+        <div class="sl-card">
+          <div class="sltp-lbl">Stop Loss</div>
+          <div class="sltp-val">-${{ slAmount }}</div>
+        </div>
+        <div class="tp-card">
+          <div class="sltp-lbl">Take Profit</div>
+          <div class="sltp-val">+${{ tpAmount }}</div>
+        </div>
+      </div>
+      <div class="field mt">
+        <label>Max Trades / Day</label>
+        <div class="rfield">
+          <input type="range" min="1" max="25" [ngModel]="maxTrades()" (ngModelChange)="maxTrades.set(+$event)"/>
+          <span class="rval">{{ maxTrades() }}</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Daily Loss Limit ($)</label>
+        <input type="number" [ngModel]="dailyLimit()" (ngModelChange)="dailyLimit.set(+$event)" min="1"/>
+      </div>
+    </div>
+
+    <!-- Martingale -->
+    <div class="psec">
+      <div class="ptitle">Martingale</div>
+      <div class="trow">
+        <div>
+          <div class="tlabel">Enable Martingale</div>
+          <div class="tsub">Multiply stake after loss</div>
+        </div>
+        <div class="sw" [class.on]="martEnabled()" (click)="martEnabled.set(!martEnabled())"></div>
+      </div>
+      <div class="field mt">
+        <label>Multiplier</label>
+        <div class="rfield">
+          <input type="range" min="1.1" max="4" step="0.1" [ngModel]="martMultiplier()" (ngModelChange)="martMultiplier.set(+$event)"/>
+          <span class="rval">{{ martMultiplier().toFixed(1) }}x</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Max Steps</label>
+        <div class="rfield">
+          <input type="range" min="1" max="8" [ngModel]="martMaxSteps()" (ngModelChange)="martMaxSteps.set(+$event)"/>
+          <span class="rval">{{ martMaxSteps() }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Strategy -->
+    <div class="psec">
+      <div class="ptitle">Strategy</div>
+      <div *ngFor="let s of strategies"
+           class="strat-item"
+           [class.sel]="selectedStrategy() === s.id"
+           (click)="selectStrategy(s.id)">
+        <div class="sname">{{ s.name }}</div>
+        <div class="sdesc">{{ s.desc }}</div>
+        <div class="smeta">
+          <span>WR: </span><span class="g">{{ s.wr }}</span>
+          <span class="r" style="margin-left:8px;">Risk: {{ s.risk }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Automation -->
+    <div class="psec">
+      <div class="ptitle">Automation</div>
+      <div class="trow">
+        <div class="tlabel">Auto Buy on Signal</div>
+        <div class="sw" [class.on]="autoBuy()" (click)="autoBuy.set(!autoBuy())"></div>
+      </div>
+      <div class="trow">
+        <div class="tlabel">Auto Exit SL/TP</div>
+        <div class="sw" [class.on]="autoExit()" (click)="autoExit.set(!autoExit())"></div>
+      </div>
+      <div class="trow">
+        <div>
+          <div class="tlabel">Pause on 3 Losses</div>
+          <div class="tsub">60 second cooldown</div>
+        </div>
+        <div class="sw" [class.on]="pauseOnLoss()" (click)="pauseOnLoss.set(!pauseOnLoss())"></div>
+      </div>
+    </div>
+
+  </div><!-- end lpanel-scroll -->
+
+  <!-- STICKY RUN ROW — always visible at bottom -->
+  <div class="run-row">
+    <button class="rbtn start" *ngIf="!botRunning()" (click)="startBot()" [disabled]="!derivConnected()">▶ START BOT</button>
+    <button class="rbtn stop" *ngIf="botRunning()" (click)="stopBot()">■ STOP</button>
+    <button class="ebtn" (click)="emergencyStop()" title="Emergency Stop">⚠</button>
+  </div>
+
+</div>

@@ -1,0 +1,26 @@
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-hex">D</div>
+    <div class="logo-text">
+      <div class="logo-name">DerivBot Pro</div>
+      <div class="logo-sub">ANGULAR 17 · REAL API</div>
+    </div>
+  </div>
+
+  <div class="conn-pill" [class]="connStatus()">
+    <div class="dot"></div>
+    <span>{{ connLabel() }}</span>
+  </div>
+
+  <div class="topbar-right">
+    <div class="bal-chip">
+      <span class="amount">{{ balance().toFixed(2) }}</span>
+      <span class="cur">{{ currency() }}</span>
+    </div>
+    <div class="mode-badge" [class.live]="isLive()" [class.paper]="!isLive()">
+      {{ isLive() ? 'LIVE' : 'PAPER' }}
+    </div>
+    <button class="btn-manual buy" (click)="manualBUY()" title="Manual BUY">▲ BUY</button>
+    <button class="btn-manual sell" (click)="manualSELL()" title="Manual SELL">▼ SELL</button>
+  </div>
+</div>
